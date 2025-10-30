@@ -2,6 +2,9 @@
 
 **Zero-knowledge one-time secret sharing** with client-side encryption. Share secrets securely knowing that even if our servers are compromised, your data remains encrypted and inaccessible.
 
+🔗 **Live Site:** [https://ots.cachevalley.co](https://ots.cachevalley.co)  
+📦 **Repository:** [https://github.com/CacheValleyCommunities/d1strust](https://github.com/CacheValleyCommunities/d1strust)
+
 ## 🔒 Security Model
 
 d1strust uses **true zero-knowledge architecture**:
@@ -44,7 +47,7 @@ Even if our servers are compromised, attackers would only find encrypted data th
 
 1. **Clone and install dependencies:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/CacheValleyCommunities/d1strust.git
    cd d1strust
    bun install
    ```
@@ -77,7 +80,7 @@ docker run -d \
   --name d1strust-ots \
   -p 3000:3000 \
   -e DB_ENCRYPTION_KEY="your-encryption-key-min-8-chars" \
-  -e BASE_URL="https://your-domain.com" \
+  -e BASE_URL="https://ots.cachevalley.co" \
   -e PORT=3000 \
   -v d1strust-data:/app/data \
   d1strust-ots
@@ -89,7 +92,7 @@ docker run -d \
 2. **Add a new application** in Coolify and connect your repository
 3. **Set environment variables:**
    - `DB_ENCRYPTION_KEY` (required) - Minimum 8 characters, use a strong random key
-   - `BASE_URL` (optional) - Your public URL (e.g., `https://ots.example.com`)
+   - `BASE_URL` (optional) - Your public URL (e.g., `https://ots.cachevalley.co`)
    - `PORT` (optional) - Usually set automatically by Coolify
    - `DB_PATH` (optional) - Defaults to `/app/data/ots.db`
 
@@ -106,7 +109,7 @@ docker run -d \
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `DB_ENCRYPTION_KEY` | ✅ Yes | - | Database encryption key (min 8 chars) for AES-256-CBC at-rest encryption |
-| `BASE_URL` | ❌ No | - | Public URL for generated links (e.g., `https://ots.example.com`) |
+| `BASE_URL` | ❌ No | - | Public URL for generated links (e.g., `https://ots.cachevalley.co`) |
 | `PORT` | ❌ No | `3000` | Server port (usually set by Coolify) |
 | `DB_PATH` | ❌ No | `/app/data/ots.db` | Path to SQLite database file |
 
@@ -289,8 +292,32 @@ d1strust/
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Security Reporting
 
-[Add security contact information]
+If you discover a security vulnerability, please report it responsibly to help ensure the safety of all users.
+
+**Email:** [security@cachevalley.co](mailto:security@cachevalley.co)
+
+Please include:
+- A description of the vulnerability
+- Steps to reproduce (if applicable)
+- Potential impact
+- Any suggested fixes
+
+We appreciate your help in keeping d1strust secure for everyone.
+
+## Attribution
+
+This project is open source and available for others to use in their projects. If you use d1strust in your project, please include attribution with links back to:
+
+- This project: [https://github.com/CacheValleyCommunities/d1strust](https://github.com/CacheValleyCommunities/d1strust)
+- Cache Valley Communities: [https://cachevalley.co](https://cachevalley.co)
+
+Thank you for respecting the open source community and helping others discover this project!
+
+## Links
+
+- 🌐 **Live Site:** [https://ots.cachevalley.co](https://ots.cachevalley.co)
+- 📦 **GitHub Repository:** [https://github.com/CacheValleyCommunities/d1strust](https://github.com/CacheValleyCommunities/d1strust)
