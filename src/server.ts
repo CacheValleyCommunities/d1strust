@@ -4,7 +4,7 @@ import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { config } from './config';
 import registerOtsPostRoute from './modules/ots/route.post';
 import registerOtsGetRoute from './modules/ots/route.get';
@@ -62,11 +62,23 @@ export async function buildServer() {
         return reply.type('text/html').send(html);
     });
 
-    // Serve static files
-    const staticPlugin = await import('@fastify/static');
-    await app.register(staticPlugin.default, {
-        root: publicDir,
-        prefix: '/',
+    // Explicit routes for static assets to ensure they're always served
+    app.get('/logo.png', async (req, reply) => {
+        const filePath = path.join(publicDir, 'logo.png');
+        if (existsSync(filePath)) {
+            const file = readFileSync(filePath);
+            return reply.type('image/png').send(file);
+        }
+        return reply.code(404).send({ error: 'Not found' });
+    });
+
+    app.get('/social.png', async (req, reply) => {
+        const filePath = path.join(publicDir, 'social.png');
+        if (existsSync(filePath)) {
+            const file = readFileSync(filePath);
+            return reply.type('image/png').send(file);
+        }
+        return reply.code(404).send({ error: 'Not found' });
     });
 
     await app.register(rateLimit);
@@ -84,6 +96,14 @@ export async function buildServer() {
 
     // Health check endpoint for monitoring and Docker health checks
     app.get('/health', async () => ({ status: 'ok' }));
+
+    // Serve static files (images, etc.) - register after API routes so they take precedence
+    // Static files will be served for any path that doesn't match above routes
+    const staticPlugin = await import('@fastify/static');
+    await app.register(staticPlugin.default, {
+        root: publicDir,
+        prefix: '/',
+    });
 
     return app;
 }
