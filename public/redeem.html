@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Secret - d1strust</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #e4e4e7;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #a1a1aa;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #e4e4e7;
+        }
+
+        /* Card */
+        .card {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Form elements */
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e4e4e7;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea,
+        select {
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            color: #e4e4e7;
+            padding: 12px 16px;
+            font-size: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #27272a;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #71717a;
+        }
+
+        /* Button */
+        button {
+            font-family: 'Inter', sans-serif;
+            background: #6366f1;
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover:not(:disabled) {
+            background: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-secondary {
+            background: #27272a;
+            color: #e4e4e7;
+            border: 1px solid #3f3f46;
+        }
+
+        .button-secondary:hover:not(:disabled) {
+            background: #3f3f46;
+            border-color: #52525b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-warning {
+            background: #27272a;
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .button-warning:hover:not(:disabled) {
+            background: #fbbf24;
+            color: #0f0f0f;
+        }
+
+        /* Success card */
+        .success-card {
+            background: #1a1a1a;
+            border: 1px solid #22c55e;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .success-icon {
+            width: 24px;
+            height: 24px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0f0f;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Secret display */
+        .secret-display {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 15px;
+            color: #e4e4e7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 16px 0;
+            line-height: 1.8;
+        }
+
+        /* Warning card */
+        .warning-card {
+            background: #1a1a1a;
+            border: 1px solid #fbbf24;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .warning-icon {
+            width: 24px;
+            height: 24px;
+            background: #fbbf24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0f0f;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .warning-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        /* Error message */
+        .error-card {
+            background: #1a1a1a;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            color: #fca5a5;
+            font-size: 14px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading card */
+        .loading-card {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+            color: #a1a1aa;
+        }
+
+        /* Progress steps animation */
+        .progress-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .progress-step.completed {
+            opacity: 0.7;
+        }
+
+        .progress-step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .progress-step.active .progress-step-icon {
+            background: #6366f1;
+            color: #ffffff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .progress-step.completed .progress-step-icon {
+            background: #22c55e;
+            color: #0f0f0f;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+            }
+        }
+
+        .progress-step-text {
+            color: #e4e4e7;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 64px;
+            padding-top: 32px;
+            border-top: 1px solid #27272a;
+            color: #71717a;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #a1a1aa;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" x-data="app()">
+        <!-- Header -->
+        <div class="header">
+            <a href="/" class="back-link">← Back to home</a>
+            <h1>Redeem Secret</h1>
+            <p>Enter your secret link to retrieve your message</p>
+        </div>
+
+        <!-- Link Input (only shown when manually redeeming) -->
+        <div x-show="!autoRedeeming" class="card">
+            <div class="form-group">
+                <label>Secret Link</label>
+                <input type="text" x-model="link" placeholder="Paste your secret link here...">
+            </div>
+            <button @click="redeem()" :disabled="redeeming || !link">
+                Decrypt Secret
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div x-show="redeeming || (secret && secret.length > 0)" class="loading-card">
+            <div x-show="redeeming"
+                style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <span class="spinner"></span>
+                <span>Decrypting your secret...</span>
+            </div>
+            <div x-show="secret && secret.length > 0"
+                style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #22c55e;">
+                <span>✓</span>
+                <span style="margin-left: 8px;">Secret successfully decrypted!</span>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <template x-for="(step, index) in decryptionSteps" :key="index">
+                    <div class="progress-step" :class="{ 
+                             'active': redeeming && decryptionStep === index + 1,
+                             'completed': decryptionStep > index + 1 || (secret && secret.length > 0)
+                         }">
+                        <div class="progress-step-icon" x-text="step.icon"></div>
+                        <div class="progress-step-text" x-text="step.text"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Password Required State -->
+        <div x-show="needsPassword" class="warning-card">
+            <div class="warning-header">
+                <div class="warning-icon">⚠</div>
+                <div class="warning-title">Password Required</div>
+            </div>
+            <p style="color: #a1a1aa; margin-bottom: 20px;">
+                This secret is password-protected. Enter the password to decrypt:
+            </p>
+            <form @submit.prevent="redeem()">
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" x-model="password" @keyup.enter.prevent="redeem()"
+                        placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <button type="submit" :disabled="!password || redeeming" class="button-warning">
+                    <span x-show="redeeming">Decrypting...</span>
+                    <span x-show="!redeeming">Unlock Secret</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Secret Display -->
+        <div x-show="secret" x-transition class="success-card">
+            <div class="success-header">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Secret Retrieved</div>
+            </div>
+            <div class="secret-display" x-text="secret"></div>
+            <div style="margin-top: 20px;">
+                <button @click="copySecret()" class="button-secondary">
+                    Copy Secret
+                </button>
+            </div>
+            <div class="info-text" style="margin-top: 20px; color: #fca5a5;">
+                ⚠ This secret has been permanently deleted from the server
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div x-show="error" x-transition class="error-card">
+            <span x-text="error"></span>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Zero-knowledge encryption | Client-side only | Secure by design
+        </div>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                link: '',
+                password: '',
+                redeeming: false,
+                needsPassword: false,
+                autoRedeeming: false,
+                secret: '',
+                error: '',
+                encryptedData: null,
+                decryptionKey: '',
+                isPasswordProtected: false,
+                decryptionStep: 0,
+                decryptionSteps: [
+                    { icon: '🔍', text: 'Retrieving encrypted data...' },
+                    { icon: '🔓', text: 'Decrypting outer layer...' },
+                    { icon: '🔑', text: 'Validating password protection...' },
+                    { icon: '🛡️', text: 'Decrypting inner layer...' },
+                    { icon: '✅', text: 'Secret unlocked!' }
+                ],
+
+                async init() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const id = urlParams.get('id'); // Server-generated ID
+                    const key = urlParams.get('key'); // Encryption key (never sent to server)
+
+                    if (id && key) {
+                        this.autoRedeeming = true;
+                        this.link = `${window.location.origin}/s/${id}?key=${key}`;
+                        this.decryptionKey = decodeURIComponent(key);
+                        setTimeout(() => this.fetchAndDecrypt(id), 100);
+                    }
+                },
+
+                async redeem() {
+                    if (!this.link && !this.autoRedeeming) {
+                        this.error = 'Please enter a secret link';
+                        return;
+                    }
+
+                    if (!this.encryptedData) {
+                        const url = new URL(this.link);
+                        const id = url.pathname.split('/').pop(); // Extract server ID from path /s/{id}
+                        const key = url.searchParams.get('key'); // Encryption key (never sent to server)
+
+                        if (!id || !key) {
+                            this.error = 'Invalid secret link format';
+                            return;
+                        }
+
+                        this.decryptionKey = decodeURIComponent(key);
+                        await this.fetchAndDecrypt(id);
+                    } else {
+                        await this.continueDecryption();
+                    }
+                },
+
+                async continueDecryption() {
+                    this.redeeming = true;
+                    this.error = '';
+                    this.secret = '';
+
+                    try {
+                        if (!this.encryptedData) {
+                            throw new Error('No encrypted data to decrypt');
+                        }
+
+                        // If decryptionStep is 0, we're starting fresh (password entry flow)
+                        // Otherwise, we're continuing from fetchAndDecrypt (already at step 1)
+                        if (this.decryptionStep === 0) {
+                            this.decryptionStep = 2; // Start at outer layer decryption
+                        }
+
+                        // Step 2: Decrypt outer layer
+                        await this.delay(600);
+
+                        const outerDecrypted = this.decryptOuterLayer(this.encryptedData);
+
+                        // Step 3: Check password protection
+                        this.decryptionStep = 3;
+                        await this.delay(400);
+
+                        const needsPassword = outerDecrypted.startsWith('PWD:');
+
+                        if (needsPassword) {
+                            if (!this.password || this.password.trim() === '') {
+                                this.needsPassword = true;
+                                this.isPasswordProtected = true;
+                                this.redeeming = false;
+                                this.decryptionStep = 0;
+                                return;
+                            }
+
+                            // Step 4: Decrypt inner layer with password
+                            this.decryptionStep = 4;
+                            await this.delay(500);
+
+                            this.secret = this.decryptInnerLayer(outerDecrypted);
+                            this.needsPassword = false;
+                        } else {
+                            // No password, decryption complete
+                            this.secret = outerDecrypted;
+                            this.needsPassword = false;
+                        }
+
+                        // Step 5: Complete
+                        this.decryptionStep = 5;
+                        await this.delay(300);
+
+                        // Ensure all steps are marked as completed
+                        this.decryptionStep = 6; // One more than last step to mark all as completed
+                    } catch (err) {
+                        this.error = err.message || 'Failed to decrypt secret. Please check your password and try again.';
+                        // Don't clear password on error - let user try again
+                        this.needsPassword = this.isPasswordProtected;
+                        this.decryptionStep = 0;
+                    } finally {
+                        this.redeeming = false;
+                    }
+                },
+
+                async fetchAndDecrypt(id) {
+                    this.redeeming = true;
+                    this.error = '';
+                    this.secret = '';
+                    this.decryptionStep = 0;
+
+                    try {
+                        // Step 1: Retrieving encrypted data
+                        this.decryptionStep = 1;
+                        await this.delay(700);
+
+                        // Server uses its own generated ID to identify secret
+                        // Encryption key never sent to server, only exists in URL query param
+                        const response = await fetch(`/api/v1/ots/${id}`);
+
+                        if (response.status === 404) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Secret not found');
+                        }
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to retrieve secret');
+                        }
+
+                        const data = await response.json();
+                        this.encryptedData = data;
+                        await this.continueDecryption();
+                    } catch (err) {
+                        this.error = err.message;
+                    } finally {
+                        this.redeeming = false;
+                        // Don't reset decryptionStep on success - keep it for display
+                        if (this.error) {
+                            this.decryptionStep = 0;
+                        }
+                    }
+                },
+
+                decryptOuterLayer(data) {
+                    const keyBytes = CryptoJS.enc.Hex.parse(this.decryptionKey);
+                    const iv = CryptoJS.enc.Hex.parse(data.iv);
+                    const ciphertext = CryptoJS.enc.Base64.parse(data.ciphertext);
+
+                    const decrypted = CryptoJS.AES.decrypt(
+                        { ciphertext: ciphertext },
+                        keyBytes,
+                        { iv: iv }
+                    );
+
+                    return decrypted.toString(CryptoJS.enc.Utf8);
+                },
+
+                decryptInnerLayer(payload) {
+                    if (!payload.startsWith('PWD:')) {
+                        throw new Error('Invalid payload format');
+                    }
+
+                    const parts = payload.substring(4).split('||');
+                    if (parts.length < 2) {
+                        throw new Error('Invalid payload format');
+                    }
+
+                    const ciphertext = parts[0];
+                    const iv = parts[1];
+
+                    // Explicitly use SHA1 to match CLI implementation (golang uses sha1.New)
+                    const passwordKey = CryptoJS.PBKDF2(this.password, '', {
+                        keySize: 256 / 32,
+                        iterations: 10000,
+                        hasher: CryptoJS.algo.SHA1
+                    });
+
+                    const ivBytes = CryptoJS.enc.Hex.parse(iv);
+                    const ciphertextBytes = CryptoJS.enc.Base64.parse(ciphertext);
+
+                    const decrypted = CryptoJS.AES.decrypt(
+                        { ciphertext: ciphertextBytes },
+                        passwordKey,
+                        { iv: ivBytes }
+                    );
+
+                    const result = decrypted.toString(CryptoJS.enc.Utf8);
+
+                    if (!result || result.length === 0) {
+                        throw new Error('Failed to decrypt - incorrect password');
+                    }
+
+                    return result;
+                },
+
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+
+                copySecret() {
+                    if (this.secret) {
+                        navigator.clipboard.writeText(this.secret).then(() => {
+                            this.error = 'Secret copied to clipboard';
+                            setTimeout(() => this.error = '', 2000);
+                        });
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

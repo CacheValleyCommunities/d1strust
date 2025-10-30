@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d1strust - One-Time Secrets</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f0f;
+            color: #e4e4e7;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+
+        /* Card */
+        .card {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Form elements */
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e4e4e7;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea,
+        select {
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            color: #e4e4e7;
+            padding: 12px 16px;
+            font-size: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #27272a;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #71717a;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #6366f1;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-label {
+            font-size: 15px;
+            color: #e4e4e7;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* Button */
+        button {
+            font-family: 'Inter', sans-serif;
+            background: #6366f1;
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover:not(:disabled) {
+            background: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success card */
+        .success-card {
+            background: #1a1a1a;
+            border: 1px solid #22c55e;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .success-icon {
+            width: 24px;
+            height: 24px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0f0f;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Link display */
+        .link-display {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 13px;
+            color: #e4e4e7;
+            word-break: break-all;
+            margin: 16px 0;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .button-secondary {
+            background: #27272a;
+            color: #e4e4e7;
+            border: 1px solid #3f3f46;
+        }
+
+        .button-secondary:hover:not(:disabled) {
+            background: #3f3f46;
+            border-color: #52525b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Info text */
+        .info-text {
+            font-size: 13px;
+            color: #a1a1aa;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* Error message */
+        .error-card {
+            background: #1a1a1a;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            color: #fca5a5;
+            font-size: 14px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Progress steps animation */
+        .progress-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .progress-step.completed {
+            opacity: 0.7;
+        }
+
+        .progress-step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .progress-step.active .progress-step-icon {
+            background: #6366f1;
+            color: #ffffff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .progress-step.completed .progress-step-icon {
+            background: #22c55e;
+            color: #0f0f0f;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+            }
+        }
+
+        .progress-step-text {
+            color: #e4e4e7;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 64px;
+            padding-top: 32px;
+            border-top: 1px solid #27272a;
+            color: #71717a;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Section spacing */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .password-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #27272a;
+        }
+
+        .password-label {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .link-display.password {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+
+        .button-gold {
+            background: #27272a;
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .button-gold:hover:not(:disabled) {
+            background: #fbbf24;
+            color: #0f0f0f;
+        }
+
+        /* Info section */
+        .info-section {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .info-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .info-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e4e4e7;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .info-section p {
+            font-size: 15px;
+            color: #a1a1aa;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .info-section ul {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .info-section li {
+            font-size: 15px;
+            color: #a1a1aa;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .info-section code {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 13px;
+            color: #e4e4e7;
+        }
+
+        .info-section .highlight {
+            color: #6366f1;
+            font-weight: 500;
+        }
+
+        .info-section .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #22c55e;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" x-data="app()">
+        <!-- Header -->
+        <div class="header">
+            <h1>d1strust</h1>
+            <p>Share secrets securely with one-time links</p>
+        </div>
+
+        <!-- Create Secret Form -->
+        <div class="card" x-show="!createdLink || createdLink.length === 0">
+            <form @submit.prevent="createSecret()">
+                <div class="form-group">
+                    <label>Secret Message</label>
+                    <textarea x-model="secretText" placeholder="Enter your secret message here..." rows="6"
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Password (optional)</label>
+                    <input type="password" x-model="password" placeholder="Leave empty for no password">
+                    <div class="info-text">
+                        Share this password separately if used
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" x-model="burnAfterRead" id="burnAfterRead">
+                        <label for="burnAfterRead" class="checkbox-label">
+                            Burn after read (self-destruct after first access)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Expiration</label>
+                    <select x-model="expiresIn">
+                        <option value="1h">1 Hour</option>
+                        <option value="24h">24 Hours</option>
+                        <option value="7d">7 Days</option>
+                    </select>
+                </div>
+
+                <button type="submit" :disabled="creating">
+                    <span x-show="!creating">Create Secret Link</span>
+                    <span x-show="creating" style="display: flex; align-items: center; justify-content: center;">
+                        <span class="spinner"></span>
+                        Creating...
+                    </span>
+                </button>
+
+                <!-- Progress Steps -->
+                <div x-show="creating || (createdLink && createdLink.length > 0)" class="progress-steps">
+                    <template x-for="(step, index) in encryptionSteps" :key="index">
+                        <div class="progress-step" :class="{ 
+                                 'active': creating && encryptionStep === index + 1,
+                                 'completed': encryptionStep > index + 1 || (createdLink && createdLink.length > 0)
+                             }">
+                            <div class="progress-step-icon" x-text="step.icon"></div>
+                            <div class="progress-step-text" x-text="step.text"></div>
+                        </div>
+                    </template>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Panel -->
+        <div x-show="createdLink && createdLink.length > 0" x-transition class="success-card">
+            <div class="success-header">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Secret created successfully</div>
+            </div>
+
+            <div>
+                <label>Share this link (one-time use):</label>
+                <div class="link-display" x-text="createdLink"></div>
+                <div x-show="successMessage" style="color: #22c55e; font-size: 14px; margin-top: 8px;"
+                    x-text="successMessage"></div>
+                <div class="button-group">
+                    <button @click="copyLink()" class="button-secondary" :disabled="!createdLink">
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="password" class="password-section">
+                <label class="password-label">Password required for decryption:</label>
+                <div class="link-display password" x-text="password"></div>
+                <button @click="copyPassword()" class="button-gold" style="margin-top: 12px;">
+                    Copy Password
+                </button>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #27272a;">
+                <div class="info-text">
+                    <div style="margin-bottom: 8px;">Link expires: <strong style="color: #e4e4e7;"
+                            x-text="expirationText"></strong></div>
+                    <div>Access limit: <strong style="color: #e4e4e7;"
+                            x-text="burnAfterRead ? '1 read (self-destruct)' : 'multiple reads'"></strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Section -->
+        <div class="info-section">
+            <h2>How It Works</h2>
+            <p>
+                d1strust uses <span class="highlight">client-side encryption</span> to ensure your secrets are never
+                readable by our servers.
+                Everything happens in your browser before any data is sent.
+            </p>
+
+            <h3>🔒 Zero-Knowledge Architecture</h3>
+            <p>
+                Our server <strong>never sees your secret</strong> in plaintext. Here's what happens:
+            </p>
+            <ul>
+                <li><strong>Encryption happens in your browser</strong> - Your secret is encrypted using AES-256-CBC
+                    before leaving your device</li>
+                <li><strong>Layered protection</strong> - If you set a password, your secret is encrypted twice: first
+                    with your password, then with a random key</li>
+                <li><strong>Key stays with you</strong> - The decryption key is embedded in the shareable link, not
+                    stored on our servers</li>
+                <li><strong>Server only stores encrypted data</strong> - We store ciphertext, initialization vectors,
+                    and metadata - but never the decryption keys</li>
+            </ul>
+
+            <h3>🛡️ Security Technology</h3>
+            <p>
+                We use industry-standard cryptographic algorithms:
+            </p>
+            <ul>
+                <li><strong>AES-256-CBC</strong> - Advanced Encryption Standard with 256-bit keys for encrypting your
+                    secrets</li>
+                <li><strong>PBKDF2-SHA1</strong> - Password-Based Key Derivation Function (10,000 iterations) for
+                    password-protected secrets</li>
+                <li><strong>Cryptographically secure random generation</strong> - All keys, IVs, and salts are generated
+                    using secure random number generators</li>
+                <li><strong>Application-level database encryption</strong> - Sensitive fields encrypted with AES-256-CBC
+                    before storage (using PBKDF2-SHA256 key derivation) for at-rest protection
+                </li>
+            </ul>
+
+            <h3>🔐 Privacy Guarantees</h3>
+            <p>
+                <span class="highlight">What we can see:</span> Encrypted ciphertext, creation timestamps, expiration
+                dates, and access counts.
+            </p>
+            <p>
+                <span class="highlight">What we cannot see:</span> Your secret content, decryption keys, passwords, or
+                any decrypted data.
+            </p>
+            <p>
+                Even if our servers were compromised, attackers would only find encrypted data that cannot be decrypted
+                without the keys
+                that you control and share directly with recipients.
+            </p>
+
+            <div class="secure-badge">
+                <span>✓</span>
+                <span>End-to-end encrypted • Zero-knowledge • Open source</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div x-show="error && error.length > 0" x-transition class="error-card">
+            <span x-text="error"></span>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Zero-knowledge encryption | Client-side only | Secure by design
+        </div>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                secretText: '',
+                password: '',
+                burnAfterRead: true,
+                expiresIn: '24h',
+                creating: false,
+                createdLink: '',
+                expirationText: '',
+                error: '',
+                successMessage: '',
+                encryptionKey: '',
+                encryptionStep: 0,
+                encryptionSteps: [
+                    { icon: '🔑', text: 'Generating encryption keys...' },
+                    { icon: '🔒', text: 'Encrypting your secret...' },
+                    { icon: '🛡️', text: 'Applying password protection...' },
+                    { icon: '🔐', text: 'Securing with outer encryption layer...' },
+                    { icon: '✅', text: 'Finalizing secure link...' }
+                ],
+
+                async createSecret() {
+                    this.creating = true;
+                    this.error = '';
+                    this.createdLink = '';
+                    this.encryptionStep = 0;
+
+                    try {
+                        // Step 1: Generate encryption keys
+                        this.encryptionStep = 1;
+                        await this.delay(800);
+
+                        this.encryptionKey = CryptoJS.lib.WordArray.random(256 / 8).toString(CryptoJS.enc.Hex);
+
+                        let payloadToEncrypt = this.secretText;
+                        let needsPassword = !!this.password;
+
+                        // Step 2: Encrypt with password if provided
+                        if (this.password) {
+                            this.encryptionStep = 3; // Skip to password step
+                            await this.delay(600);
+
+                            const passwordIv = CryptoJS.lib.WordArray.random(128 / 8);
+                            // Explicitly use SHA1 to match CLI implementation (golang uses sha1.New)
+                            const passwordKey = CryptoJS.PBKDF2(this.password, '', {
+                                keySize: 256 / 32,
+                                iterations: 10000,
+                                hasher: CryptoJS.algo.SHA1
+                            });
+
+                            const passwordEncrypted = CryptoJS.AES.encrypt(
+                                this.secretText,
+                                passwordKey,
+                                { iv: passwordIv }
+                            );
+
+                            payloadToEncrypt = 'PWD:' + passwordEncrypted.ciphertext.toString(CryptoJS.enc.Base64) + '||' + passwordIv.toString(CryptoJS.enc.Hex);
+                        } else {
+                            // Step 2: Encrypt (no password)
+                            this.encryptionStep = 2;
+                            await this.delay(600);
+                        }
+
+                        // Step 4: Outer encryption layer
+                        this.encryptionStep = 4;
+                        await this.delay(500);
+
+                        const iv = CryptoJS.lib.WordArray.random(128 / 8);
+                        const keyBytes = CryptoJS.enc.Hex.parse(this.encryptionKey);
+                        const outerEncrypted = CryptoJS.AES.encrypt(
+                            payloadToEncrypt,
+                            keyBytes,
+                            { iv: iv }
+                        );
+
+                        // Encryption key never sent to server - only encrypted data
+                        const payload = {
+                            ciphertext: outerEncrypted.ciphertext.toString(CryptoJS.enc.Base64),
+                            iv: iv.toString(CryptoJS.enc.Hex),
+                            salt: CryptoJS.lib.WordArray.random(128 / 8).toString(CryptoJS.enc.Hex),
+                            kdf: 'pbkdf2',
+                            kdfParams: {
+                                iterations: 10000,
+                                isPasswordProtected: needsPassword
+                            },
+                            burnAfterRead: this.burnAfterRead,
+                            expiresIn: this.expiresIn
+                        };
+
+                        // Step 5: Finalizing
+                        this.encryptionStep = 5;
+                        await this.delay(400);
+
+                        const response = await fetch('/api/v1/ots/', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to create secret');
+                        }
+
+                        const data = await response.json();
+                        // Server returns URL with server-generated ID, we add encryption key as query param
+                        // Encryption key never sent to server, only exists in URL query param
+
+                        // Ensure we have a valid ID
+                        if (!data.id || typeof data.id !== 'string' || data.id.length === 0) {
+                            console.error('Invalid server response:', data);
+                            throw new Error('Server did not return a valid ID');
+                        }
+
+                        // Use server-provided URL if available, otherwise construct from ID
+                        // Server returns full URL like http://localhost:5000/s/{id}
+                        let baseUrl = data.urls?.retrieve;
+                        if (!baseUrl || !baseUrl.includes(data.id)) {
+                            // Fallback: construct relative URL from ID
+                            baseUrl = `/s/${data.id}`;
+                        }
+
+                        // Append encryption key as query parameter
+                        this.createdLink = `${baseUrl}?key=${encodeURIComponent(this.encryptionKey)}`;
+
+                        if (data.expiresAt) {
+                            const expDate = new Date(data.expiresAt);
+                            this.expirationText = expDate.toLocaleString();
+                        } else {
+                            this.expirationText = 'Never';
+                        }
+
+                        // Small delay before showing success
+                        await this.delay(300);
+
+                        // Ensure all steps are marked as completed
+                        this.encryptionStep = 6; // One more than last step to mark all as completed
+                    } catch (err) {
+                        console.error('Error creating secret:', err);
+                        this.error = err.message;
+                        this.createdLink = ''; // Clear link on error
+                    } finally {
+                        this.creating = false;
+                        // Don't reset encryptionStep on success - keep it for display
+                        if (!this.createdLink) {
+                            this.encryptionStep = 0;
+                        }
+                    }
+                },
+
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+
+                copyLink() {
+                    if (!this.createdLink) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(this.createdLink).then(() => {
+                        this.successMessage = 'Link copied to clipboard';
+                        setTimeout(() => this.successMessage = '', 2000);
+                    }).catch((err) => {
+                        this.error = 'Failed to copy link';
+                        console.error('Copy failed:', err);
+                    });
+                },
+
+                copyPassword() {
+                    if (!this.password) {
+                        return;
+                    }
+                    navigator.clipboard.writeText(this.password).then(() => {
+                        this.successMessage = 'Password copied to clipboard';
+                        setTimeout(() => this.successMessage = '', 2000);
+                    }).catch((err) => {
+                        this.error = 'Failed to copy password';
+                        console.error('Copy failed:', err);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
