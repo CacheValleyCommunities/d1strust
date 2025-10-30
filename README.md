@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="public/logo.png" alt="d1strust logo" width="128">
+</div>
+
 # d1strust
 
 A zero-knowledge one-time secret sharing service. Share secrets that self-destruct, with encryption that happens entirely client-side. Even if someone compromises the server, they can't decrypt your secrets—the keys never leave your browser.
@@ -182,3 +186,4 @@ Use this in your projects if you want. Just link back to:
 - Cache Valley Communities: [cachevalley.co](https://cachevalley.co)
 
 Thanks for respecting the open source community.
+git a

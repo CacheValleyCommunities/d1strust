@@ -5,6 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>d1strust - One-Time Secrets</title>
+    <meta name="description"
+        content="Zero-knowledge one-time secret sharing with client-side encryption. Share secrets securely that self-destruct. Keys never leave your browser.">
+    <meta name="keywords"
+        content="secret sharing, one-time secret, encrypted secrets, zero-knowledge, secure messaging, self-destruct, burn after read">
+    <meta name="author" content="Cache Valley Communities">
+    <meta name="theme-color" content="#0f0f0f">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ots.cachevalley.co/">
+    <meta property="og:title" content="d1strust - One-Time Secrets">
+    <meta property="og:description"
+        content="Zero-knowledge one-time secret sharing with client-side encryption. Share secrets securely that self-destruct. Keys never leave your browser.">
+    <meta property="og:image" content="https://ots.cachevalley.co/social.png">
+    <meta property="og:site_name" content="d1strust">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ots.cachevalley.co/">
+    <meta name="twitter:title" content="d1strust - One-Time Secrets">
+    <meta name="twitter:description"
+        content="Zero-knowledge one-time secret sharing with client-side encryption. Share secrets securely that self-destruct. Keys never leave your browser.">
+    <meta name="twitter:image" content="https://ots.cachevalley.co/social.png">
+
+    <link rel="icon" type="image/png" href="/logo.png">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
     <style>
@@ -34,6 +59,12 @@
         .header {
             text-align: center;
             margin-bottom: 48px;
+        }
+
+        .header img {
+            height: 100px;
+            width: auto;
+            margin-bottom: 16px;
         }
 
         .header h1 {
@@ -330,12 +361,26 @@
 
         /* Footer */
         .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             text-align: center;
             margin-top: 64px;
             padding-top: 32px;
             border-top: 1px solid #27272a;
             color: #71717a;
             font-size: 14px;
+        }
+
+        .footer a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #818cf8;
         }
 
         /* Responsive */
@@ -466,7 +511,7 @@
     <div class="container" x-data="app()">
         <!-- Header -->
         <div class="header">
-            <h1>d1strust</h1>
+            <img src="/logo.png" alt="d1strust logo">
             <p>Share secrets securely with one-time links</p>
         </div>
 
@@ -608,7 +653,7 @@
             <h3>🔐 Privacy Guarantees</h3>
             <p>
                 <span class="highlight">What we can see:</span> Encrypted ciphertext, creation timestamps, expiration
-                dates, and access counts.
+                dates, and access counts (If not set to burn after read).
             </p>
             <p>
                 <span class="highlight">What we cannot see:</span> Your secret content, decryption keys, passwords, or
@@ -633,7 +678,12 @@
 
         <!-- Footer -->
         <div class="footer">
-            Zero-knowledge encryption | Client-side only | Secure by design
+            <div>Zero-knowledge encryption | Client-side only | Secure by design</div>
+            <div>
+                <a href="https://github.com/CacheValleyCommunities/d1strust" target="_blank" rel="noopener noreferrer">
+                    View on GitHub
+                </a>
+            </div>
         </div>
     </div>
 

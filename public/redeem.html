@@ -5,6 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redeem Secret - d1strust</title>
+    <meta name="description"
+        content="Redeem your one-time secret securely. Decryption happens entirely in your browser using zero-knowledge encryption.">
+    <meta name="keywords"
+        content="secret sharing, one-time secret, encrypted secrets, zero-knowledge, secure messaging, decrypt secret">
+    <meta name="author" content="Cache Valley Communities">
+    <meta name="theme-color" content="#0f0f0f">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ots.cachevalley.co/redeem">
+    <meta property="og:title" content="Redeem Secret - d1strust">
+    <meta property="og:description"
+        content="Redeem your one-time secret securely. Decryption happens entirely in your browser using zero-knowledge encryption.">
+    <meta property="og:image" content="https://ots.cachevalley.co/logo.png">
+    <meta property="og:site_name" content="d1strust">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ots.cachevalley.co/redeem">
+    <meta name="twitter:title" content="Redeem Secret - d1strust">
+    <meta name="twitter:description"
+        content="Redeem your one-time secret securely. Decryption happens entirely in your browser using zero-knowledge encryption.">
+    <meta name="twitter:image" content="https://ots.cachevalley.co/logo.png">
+
+    <link rel="icon" type="image/png" href="/logo.png">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
     <style>
@@ -34,6 +60,12 @@
         .header {
             text-align: center;
             margin-bottom: 48px;
+        }
+
+        .header img {
+            height: 64px;
+            width: auto;
+            margin-bottom: 16px;
         }
 
         .header h1 {
@@ -359,12 +391,26 @@
 
         /* Footer */
         .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             text-align: center;
             margin-top: 64px;
             padding-top: 32px;
             border-top: 1px solid #27272a;
             color: #71717a;
             font-size: 14px;
+        }
+
+        .footer a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #818cf8;
         }
 
         /* Responsive */
@@ -399,6 +445,7 @@
     <div class="container" x-data="app()">
         <!-- Header -->
         <div class="header">
+            <img src="/logo.png" alt="d1strust logo">
             <a href="/" class="back-link">← Back to home</a>
             <h1>Redeem Secret</h1>
             <p>Enter your secret link to retrieve your message</p>
@@ -488,7 +535,12 @@
 
         <!-- Footer -->
         <div class="footer">
-            Zero-knowledge encryption | Client-side only | Secure by design
+            <div>Zero-knowledge encryption | Client-side only | Secure by design</div>
+            <div>
+                <a href="https://github.com/CacheValleyCommunities/d1strust" target="_blank" rel="noopener noreferrer">
+                    View on GitHub
+                </a>
+            </div>
         </div>
     </div>
 
